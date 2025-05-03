@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="300"
+             x:Class="Ebertin.Controls.PieMenu"
+             Width="300" Height="300">
+    <Canvas>
+        <!-- Center circle -->
+        <Ellipse Width="60" Height="60" 
+                 Fill="#2C3A42" 
+                 Stroke="#4A5A64" 
+                 StrokeThickness="2"
+                 Canvas.Left="120" Canvas.Top="120"/>
+        
+        <!-- Menu items (sectors) -->
+        <Path x:Name="MenuItem1" Fill="#3E4C54" Stroke="#4A5A64" StrokeThickness="2">
+            <Path.Data>
+                <PathGeometry>
+                    <PathFigure StartPoint="150,150">
+                        <LineSegment Point="150,50"/>
+                        <ArcSegment Size="100,100" Point="235,85" SweepDirection="Clockwise"/>
+                        <LineSegment Point="150,150"/>
+                    </PathFigure>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        
+        <Path x:Name="MenuItem2" Fill="#3E4C54" Stroke="#4A5A64" StrokeThickness="2">
+            <Path.Data>
+                <PathGeometry>
+                    <PathFigure StartPoint="150,150">
+                        <LineSegment Point="235,85"/>
+                        <ArcSegment Size="100,100" Point="235,215" SweepDirection="Clockwise"/>
+                        <LineSegment Point="150,150"/>
+                    </PathFigure>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        
+        <Path x:Name="MenuItem3" Fill="#3E4C54" Stroke="#4A5A64" StrokeThickness="2">
+            <Path.Data>
+                <PathGeometry>
+                    <PathFigure StartPoint="150,150">
+                        <LineSegment Point="235,215"/>
+                        <ArcSegment Size="100,100" Point="150,250" SweepDirection="Clockwise"/>
+                        <LineSegment Point="150,150"/>
+                    </PathFigure>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        
+        <Path x:Name="MenuItem4" Fill="#3E4C54" Stroke="#4A5A64" StrokeThickness="2">
+            <Path.Data>
+                <PathGeometry>
+                    <PathFigure StartPoint="150,150">
+                        <LineSegment Point="150,250"/>
+                        <ArcSegment Size="100,100" Point="65,215" SweepDirection="Clockwise"/>
+                        <LineSegment Point="150,150"/>
+                    </PathFigure>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        
+        <Path x:Name="MenuItem5" Fill="#3E4C54" Stroke="#4A5A64" StrokeThickness="2">
+            <Path.Data>
+                <PathGeometry>
+                    <PathFigure StartPoint="150,150">
+                        <LineSegment Point="65,215"/>
+                        <ArcSegment Size="100,100" Point="65,85" SweepDirection="Clockwise"/>
+                        <LineSegment Point="150,150"/>
+                    </PathFigure>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        
+        <Path x:Name="MenuItem6" Fill="#3E4C54" Stroke="#4A5A64" StrokeThickness="2">
+            <Path.Data>
+                <PathGeometry>
+                    <PathFigure StartPoint="150,150">
+                        <LineSegment Point="65,85"/>
+                        <ArcSegment Size="100,100" Point="150,50" SweepDirection="Clockwise"/>
+                        <LineSegment Point="150,150"/>
+                    </PathFigure>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        
+        <!-- Menu item labels -->
+        <TextBlock Text="Copy" Foreground="White" FontSize="14" Canvas.Left="175" Canvas.Top="80"/>
+        <TextBlock Text="Paste" Foreground="White" FontSize="14" Canvas.Left="200" Canvas.Top="150"/>
+        <TextBlock Text="Delete" Foreground="White" FontSize="14" Canvas.Left="165" Canvas.Top="220"/>
+        <TextBlock Text="Save" Foreground="White" FontSize="14" Canvas.Left="95" Canvas.Top="220"/>
+        <TextBlock Text="Load" Foreground="White" FontSize="14" Canvas.Left="65" Canvas.Top="150"/>
+        <TextBlock Text="New" Foreground="White" FontSize="14" Canvas.Left="100" Canvas.Top="80"/>
+    </Canvas>
+</UserControl>

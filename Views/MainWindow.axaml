@@ -1,0 +1,571 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Ebertin.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="using:Ebertin.Converters"
+        xmlns:views="using:Ebertin.Views"
+        xmlns:controls="using:Ebertin.Controls"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Ebertin.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Ebertin"
+        Background="#36454F"
+        PointerPressed="MainWindow_PointerPressed">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="#2C3A42"/>
+        <SolidColorBrush x:Key="MenuFlyoutPresenterBorderBrush" Color="#1A2329"/>
+        <converters:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
+    </Window.Resources>
+
+    <Window.Styles>
+        <!-- Style for the Menu bar -->
+        <Style Selector="Menu">
+            <Setter Property="Background" Value="#2C3A42"/>
+        </Style>
+        
+        <!-- Style for menu items -->
+        <Style Selector="MenuItem">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+        </Style>
+        
+        <!-- Style for menu items on hover -->
+        <Style Selector="MenuItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Background" Value="#3E4C54"/>
+            <Setter Property="Foreground" Value="#D0D0D0"/>
+        </Style>
+        
+        <!-- Keep File menu item from turning black when submenu is open -->
+        <Style Selector="MenuItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Background" Value="#3E4C54"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        
+        <!-- Override the popup background directly -->
+        <Style Selector="MenuItem">
+            <Style.Resources>
+                <SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="#2C3A42"/>
+                <SolidColorBrush x:Key="MenuFlyoutItemBackground" Color="#2C3A42"/>
+                <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="#3E4C54"/>
+            </Style.Resources>
+        </Style>
+        
+        <!-- Style for modal window -->
+        <Style Selector="Button.close-button">
+            <Setter Property="Background" Value="#3E4C54"/>
+            <Setter Property="BorderBrush" Value="#4A5A64"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <!-- Override TextBox styles completely to fix text color issues -->
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="#36454F"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#4A5A64"/>
+            <Setter Property="CaretBrush" Value="White"/>
+            <Setter Property="SelectionBrush" Value="#3D8BF5"/>
+            <Setter Property="SelectionForegroundBrush" Value="White"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Name="PART_BorderElement"
+                           Background="{TemplateBinding Background}"
+                           BorderBrush="{TemplateBinding BorderBrush}"
+                           BorderThickness="{TemplateBinding BorderThickness}"
+                           CornerRadius="{TemplateBinding CornerRadius}">
+                        <DockPanel Margin="{TemplateBinding Padding}">
+                            <TextBlock Name="PART_Watermark"
+                                     Text="{TemplateBinding Watermark}"
+                                     Foreground="#AAD0D0D0"
+                                     IsVisible="{TemplateBinding Text, Converter={x:Static StringConverters.IsNullOrEmpty}}"
+                                     VerticalAlignment="Center"/>
+                            <ScrollViewer Name="PART_ScrollViewer"
+                                        HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+                                        VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}">
+                                <Panel>
+                                    <TextPresenter Name="PART_TextPresenter"
+                                                Text="{TemplateBinding Text, Mode=TwoWay}"
+                                                CaretIndex="{TemplateBinding CaretIndex}"
+                                                SelectionStart="{TemplateBinding SelectionStart}"
+                                                SelectionEnd="{TemplateBinding SelectionEnd}"
+                                                TextAlignment="{TemplateBinding TextAlignment}"
+                                                TextWrapping="{TemplateBinding TextWrapping}"
+                                                PasswordChar="{TemplateBinding PasswordChar}"
+                                                RevealPassword="{TemplateBinding RevealPassword}"
+                                                SelectionBrush="{TemplateBinding SelectionBrush}"
+                                                SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+                                                CaretBrush="{TemplateBinding CaretBrush}"
+                                                Foreground="White"/>
+                                </Panel>
+                            </ScrollViewer>
+                        </DockPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        
+        <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="#36454F"/>
+            <Setter Property="BorderBrush" Value="#6A7A84"/>
+        </Style>
+        
+        <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="#36454F"/>
+            <Setter Property="BorderBrush" Value="#6A7A84"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        
+        <!-- Fix for button hover styles to maintain white text -->
+        <Style Selector="Button:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#4A5A64"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        <Style Selector="Border.message-success">
+            <Setter Property="Background" Value="#1A4D4D4D"/>
+            <Setter Property="BorderBrush" Value="#336B6B6B"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+        
+        <Style Selector="Border.message-warning">
+            <Setter Property="Background" Value="#1AFFC107"/>
+            <Setter Property="BorderBrush" Value="#33FFC107"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+        
+        <Style Selector="Border.message-error">
+            <Setter Property="Background" Value="#1AFF5252"/>
+            <Setter Property="BorderBrush" Value="#33FF5252"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+        
+        <Style Selector="Border.message-success TextBlock">
+            <Setter Property="Foreground" Value="#228B22"/>
+        </Style>
+        
+        <Style Selector="Border.message-warning TextBlock">
+            <Setter Property="Foreground" Value="#856404"/>
+        </Style>
+        
+        <Style Selector="Border.message-error TextBlock">
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Settings">
+                <MenuItem Header="_API Key" Command="{Binding OpenApiKeyWindowCommand}"/>
+            </MenuItem>
+        </Menu>
+        
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" Background="#2C3A42" Padding="0,8">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="71,0,0,0">
+                <Grid Margin="0,0,5,0">
+                    <Button Width="50" Height="50" Command="{Binding Button1Command}"
+                            ToolTip.Tip="Single Dial">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="#3E4C54"/>
+                                <Setter Property="BorderBrush" Value="#4A5A64"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#4A5A64"/>
+                            </Style>
+                        </Button.Styles>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas Width="100" Height="100">
+                                <!-- Single circle icon -->
+                                <Ellipse Canvas.Left="10" Canvas.Top="10" Width="80" Height="80" 
+                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Border Height="3" VerticalAlignment="Bottom" 
+                            Background="{Binding IsTopButton1Active, Converter={StaticResource BooleanToColorConverter}}" />
+                </Grid>
+                <Grid Margin="0,0,5,0">
+                    <Button Width="50" Height="50" Command="{Binding Button2Command}"
+                            ToolTip.Tip="Bi-Dial">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="#3E4C54"/>
+                                <Setter Property="BorderBrush" Value="#4A5A64"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#4A5A64"/>
+                            </Style>
+                        </Button.Styles>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas Width="100" Height="100">
+                                <!-- Circle within a circle icon - with inner circle closer to outer -->
+                                <Ellipse Canvas.Left="10" Canvas.Top="10" Width="80" Height="80" 
+                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                <Ellipse Canvas.Left="20" Canvas.Top="20" Width="60" Height="60" 
+                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Border Height="3" VerticalAlignment="Bottom" 
+                            Background="{Binding IsTopButton2Active, Converter={StaticResource BooleanToColorConverter}}" />
+                </Grid>
+                <Grid>
+                    <Button Width="50" Height="50" Command="{Binding Button3Command}"
+                            ToolTip.Tip="Tri-Dial">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="#3E4C54"/>
+                                <Setter Property="BorderBrush" Value="#4A5A64"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#4A5A64"/>
+                            </Style>
+                        </Button.Styles>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas Width="100" Height="100">
+                                <!-- Three concentric circles with consistent spacing -->
+                                <Ellipse Canvas.Left="10" Canvas.Top="10" Width="80" Height="80" 
+                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                <Ellipse Canvas.Left="20" Canvas.Top="20" Width="60" Height="60" 
+                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                <Ellipse Canvas.Left="30" Canvas.Top="30" Width="40" Height="40" 
+                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Border Height="3" VerticalAlignment="Bottom" 
+                            Background="{Binding IsTopButton3Active, Converter={StaticResource BooleanToColorConverter}}" />
+                </Grid>
+            </StackPanel>
+        </Border>
+        
+        <!-- Status Bar -->
+        <Border DockPanel.Dock="Bottom" Background="#2C3A42" Padding="10,5">
+            <TextBlock Text="Ready" 
+                       Foreground="White" 
+                       VerticalAlignment="Center"/>
+        </Border>
+        
+        <!-- Left Vertical Menu -->
+        <Border DockPanel.Dock="Left" Background="#2C3A42" Padding="5,3,5,5">
+            <StackPanel Orientation="Vertical">
+                <Grid Margin="0,0,0,5">
+                    <Border Width="3" HorizontalAlignment="Left" 
+                            Background="{Binding IsFlyoutOpen, Converter={StaticResource BooleanToColorConverter}}" />
+                    <Button Width="50" Height="50" Margin="6,0,0,0" 
+                            Command="{Binding LeftButton1Command}"
+                            ToolTip.Tip="Chart Data">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="#3E4C54"/>
+                                <Setter Property="BorderBrush" Value="#4A5A64"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#4A5A64"/>
+                            </Style>
+                        </Button.Styles>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas Width="100" Height="100">
+                                <!-- Left menu button 1 - Hamburger menu -->
+                                <Rectangle Canvas.Left="25" Canvas.Top="25" Width="50" Height="10" 
+                                           Fill="White" RadiusX="2" RadiusY="2"/>
+                                <Rectangle Canvas.Left="25" Canvas.Top="45" Width="50" Height="10" 
+                                           Fill="White" RadiusX="2" RadiusY="2"/>
+                                <Rectangle Canvas.Left="25" Canvas.Top="65" Width="50" Height="10" 
+                                           Fill="White" RadiusX="2" RadiusY="2"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                </Grid>
+                <Grid Margin="0,0,0,5">
+                    <Border Width="3" HorizontalAlignment="Left" 
+                            Background="{Binding IsButton2Active, Converter={StaticResource BooleanToColorConverter}}" />
+                    <Button Width="50" Height="50" Margin="6,0,0,0" 
+                            Command="{Binding LeftButton2Command}">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="#3E4C54"/>
+                                <Setter Property="BorderBrush" Value="#4A5A64"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#4A5A64"/>
+                            </Style>
+                        </Button.Styles>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas Width="100" Height="100">
+                                <!-- Left menu button 2 - Settings icon -->
+                                <Ellipse Canvas.Left="35" Canvas.Top="35" Width="30" Height="30" 
+                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                <Path Data="M50,20 L50,30 M50,70 L50,80 M20,50 L30,50 M70,50 L80,50 M29,29 L36,36 M64,36 L71,29 M29,71 L36,64 M64,64 L71,71"
+                                      Stroke="White" StrokeThickness="5" StrokeLineCap="Round"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                </Grid>
+                <Grid>
+                    <Border Width="3" HorizontalAlignment="Left" 
+                            Background="{Binding IsButton3Active, Converter={StaticResource BooleanToColorConverter}}" />
+                    <Button Width="50" Height="50" Margin="6,0,0,0" 
+                            Command="{Binding LeftButton3Command}">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="#3E4C54"/>
+                                <Setter Property="BorderBrush" Value="#4A5A64"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#4A5A64"/>
+                            </Style>
+                        </Button.Styles>
+                        <Viewbox Stretch="Uniform">
+                            <Canvas Width="100" Height="100">
+                                <!-- Left menu button 3 - Nested square icon -->
+                                <Rectangle Canvas.Left="25" Canvas.Top="25" Width="50" Height="50" 
+                                           Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                <Rectangle Canvas.Left="35" Canvas.Top="35" Width="30" Height="30" 
+                                           Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                <Ellipse Canvas.Left="45" Canvas.Top="45" Width="10" Height="10" Fill="White"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </Border>
+        
+        <!-- Right Panel -->
+        <Border DockPanel.Dock="Right" Width="15" Background="#2C3A42" />
+        
+        <!-- Main Content Area with Flyout Overlay -->
+        <Grid>
+            <!-- Main Content - Will be under the flyout -->
+            <ContentControl Content="{Binding CurrentCanvas}" 
+                            PointerReleased="Canvas_PointerReleased"/>
+                       
+            <!-- Flyout Panel - Overlays content -->
+            <Border HorizontalAlignment="Left"
+                    VerticalAlignment="Stretch"
+                    Background="#2C3A42" 
+                    Width="{Binding FlyoutWidth}"
+                    ClipToBounds="True"
+                    ZIndex="1">
+                <Border.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Width" Duration="0:0:0.3" Easing="CubicEaseOut"/>
+                    </Transitions>
+                </Border.Transitions>
+                <Grid Width="300">
+                    <StackPanel Margin="10">
+                        <TextBlock Text="Flyout Panel" 
+                                   Foreground="White" 
+                                   FontSize="16"
+                                   Margin="0,0,0,20"/>
+                        <Button Content="Close" 
+                                Width="100" 
+                                Height="30"
+                                Command="{Binding CloseFlyoutCommand}">
+                            <Button.Styles>
+                                <Style Selector="Button">
+                                    <Setter Property="Background" Value="#3E4C54"/>
+                                    <Setter Property="BorderBrush" Value="#4A5A64"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Style>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="#4A5A64"/>
+                                </Style>
+                            </Button.Styles>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            
+            <!-- Pie Menu Popup -->
+            <controls:PieMenuPopup x:Name="PieMenuPopup" 
+                                   IsVisible="False"
+                                   ItemSelected="PieMenu_ItemSelected"/>
+            
+            <!-- API Key Modal Dialog -->
+            <Border x:Name="APIKeyModalOverlay"
+                    IsVisible="{Binding IsApiKeyModalVisible}"
+                    Background="#80000000"
+                    IsHitTestVisible="{Binding IsApiKeyModalVisible}"
+                    ZIndex="100">
+                <Border Width="420"
+                        Height="480"
+                        Background="#2C3A42"
+                        CornerRadius="4"
+                        BorderBrush="#4A5A64"
+                        BorderThickness="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        BoxShadow="0 4 20 0 #20000000, 0 0 0 0 #00000000">
+                    <Grid>
+                        <StackPanel Margin="20">
+                            <TextBlock Text="API Key Settings"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,15"/>
+                            
+                            <!-- System message placeholder -->
+                            <Border Classes="message-success"
+                                    IsVisible="{Binding IsSystemMessageVisible}">
+                                <TextBlock Text="{Binding SystemMessageText}"
+                                           TextWrapping="Wrap"/>
+                            </Border>
+                            
+                            <!-- Account settings content here -->
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBlock Text="Manage your API key information"
+                                           Foreground="#D0D0D0"
+                                           Grid.Column="0" 
+                                           VerticalAlignment="Center"/>
+                                
+                                <Button Grid.Column="1"
+                                        Width="20" 
+                                        Height="20"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Padding="0"
+                                        Margin="8,0,0,0"
+                                        ToolTip.Tip="You can set which API you connect to. You are not limited to having to use the default API, although this can be a good choice for many.&#x0a;&#x0a;You require an API key to be registered to use the API that generates chart data.&#x0a;&#x0a;If you already have an API key, enter your user name and email address here and click the Retrieve button. Your API key will be returned automatically.&#x0a;&#x0a;If you require a new API key, enter your user name and email address and click the Create API Key button. Your email address will be verified and once that is done you will be able to retrieve your API key.">
+                                    <Border Width="20" 
+                                            Height="20" 
+                                            Background="#4A5A64" 
+                                            CornerRadius="10">
+                                        <TextBlock Text="?"
+                                                   Foreground="White"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center"
+                                                   TextAlignment="Center"/>
+                                    </Border>
+                                </Button>
+                            </Grid>
+                            
+                            <!-- API Location input field with save button -->
+                            <TextBlock Text="API End Point Location" Foreground="White" Margin="0,10,0,5"/>
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBox Text="{Binding ApiLocation}"
+                                         Watermark="Enter API endpoint URL"
+                                         Background="#36454F"
+                                         Foreground="White"
+                                         BorderBrush="#4A5A64"
+                                         Grid.Column="0" 
+                                         Margin="0,0,5,0"/>
+                                         
+                                <Button Grid.Column="1"
+                                        Width="40" 
+                                        Height="40"
+                                        Command="{Binding SaveConfigurationCommand}"
+                                        Background="#3E4C54"
+                                        BorderBrush="#4A5A64"
+                                        Foreground="White"
+                                        ToolTip.Tip="Save API Location">
+                                    <Canvas Width="24" Height="24">
+                                        <!-- Save Icon (floppy disk) -->
+                                        <Rectangle Canvas.Left="3" Canvas.Top="3" Width="18" Height="18" 
+                                                   Stroke="White" StrokeThickness="1.5" Fill="Transparent"/>
+                                        <Rectangle Canvas.Left="6" Canvas.Top="8" Width="12" Height="8" 
+                                                   Stroke="White" StrokeThickness="1.5" Fill="Transparent"/>
+                                        <Rectangle Canvas.Left="8" Canvas.Top="3" Width="8" Height="4" 
+                                                   Stroke="White" StrokeThickness="1.5" Fill="Transparent"/>
+                                    </Canvas>
+                                </Button>
+                            </Grid>
+                            
+                            <!-- Form fields -->
+                            <TextBlock Text="Username" Foreground="White" Margin="0,10,0,5"/>
+                            <TextBox Text="{Binding Username}"
+                                     Watermark="Enter username"
+                                     Background="#36454F"
+                                     Foreground="White"
+                                     BorderBrush="#4A5A64"/>
+                            
+                            <TextBlock Text="Email" Foreground="White" Margin="0,10,0,5"/>
+                            <TextBox Text="{Binding Email}"
+                                     Watermark="Enter email address"
+                                     Background="#36454F"
+                                     Foreground="White"
+                                     BorderBrush="#4A5A64"/>
+                            
+                            <!-- API Key label field -->
+                            <TextBlock Text="API Key" Foreground="White" Margin="0,10,0,5"/>
+                            <Border Background="#36454F" 
+                                    BorderBrush="#4A5A64" 
+                                    BorderThickness="1" 
+                                    CornerRadius="3"
+                                    Padding="8,6"
+                                    Margin="0,0,0,10">
+                                <TextBlock Text="{Binding ApiKeyDisplay}" 
+                                           Foreground="#AAD0D0D0"
+                                           TextWrapping="Wrap"/>
+                            </Border>
+                        </StackPanel>
+                        
+                        <!-- Action buttons -->
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Bottom"
+                                    Margin="20,0,0,20"
+                                    Spacing="10">
+                                    
+                            <Button Content="Create Key"
+                                    Command="{Binding CreateApiKeyCommand}"
+                                    Classes="close-button"
+                                    Width="120"
+                                    IsEnabled="{Binding !IsProcessing}"/>
+                                    
+                            <Button Content="Retrieve Key"
+                                    Command="{Binding RetrieveApiKeyCommand}"
+                                    Classes="close-button"
+                                    Width="100"
+                                    IsEnabled="{Binding !IsProcessing}"/>
+                        </StackPanel>
+                        
+                        <!-- Close button in bottom right corner -->
+                        <Button Content="Close"
+                                Command="{Binding CloseApiKeyModalCommand}"
+                                Classes="close-button"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,20,20"/>
+                    </Grid>
+                </Border>
+            </Border> 
+            
+        </Grid>
+    </DockPanel>
+</Window>
