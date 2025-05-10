@@ -31,8 +31,10 @@ namespace Ebertin.Services
         /// <param name="name">The user's name.</param>
         /// <param name="email">The user's email address.</param>
         /// <returns>A task representing the registration process with the API key as the result.</returns>
-        public async Task<string> RegisterApiKeyAsync(string name, string email)
+        public async Task<string> RegisterApiKeyAsync(string api_location, string name, string email)
         {
+            _configManager.ApiLocation = api_location;
+            
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Name must be provided", nameof(name));
 

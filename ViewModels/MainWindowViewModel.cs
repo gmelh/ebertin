@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Ebertin.Views;
 using Ebertin.Services;
+using System.Collections.ObjectModel;
 
 namespace Ebertin.ViewModels
 {
+    // System message type
+    public enum SystemMessageType
+    {
+        Success,
+        Warning,  
+        Error
+    }
+    
     public partial class MainWindowViewModel : ObservableObject
     {
         private bool _isFlyoutOpen;
@@ -23,12 +32,26 @@ namespace Ebertin.ViewModels
         private bool _isConfigurationModalVisible;
         
         private string _apiLocation = "https://api.ebertinmethod.com";
-        private string _username;
-        private string _email;
+        private string _username = "";
+        private string _email = "";
+        private string _googleMapsApiKey = "";
         private string _apiKeyDisplay = "Your API key will appear here";
         private bool _isSystemMessageVisible;
         private string _systemMessageText;
         private bool _isProcessing;
+        private bool _isUpdatingSuggestions = false;
+        private SystemMessageType _systemMessageType;
+        
+        // Birth Date and Time fields for TextBox controls
+        private string _birthDateText;
+        private string _birthTimeText;
+        
+        // Location Autocomplete Properties
+        private string _locationSearchText;
+        private bool _isSuggestionsVisible;
+        private ObservableCollection<string> _locationSuggestions = new ObservableCollection<string>();
+        private string _selectedLocationSuggestion;
+        private readonly LocationService _locationService;
         
         // Initialize the configuration manager and API service
         private readonly ConfigurationManager _configManager = new ConfigurationManager();
@@ -40,10 +63,8 @@ namespace Ebertin.ViewModels
             get => _isFlyoutOpen;
             set
             {
-                if (SetProperty(ref _isFlyoutOpen, value))
-                {
-                    Console.WriteLine($"IsFlyoutOpen changed to: {value}");
-                }
+                _isFlyoutOpen = value;
+                OnPropertyChanged(nameof(IsFlyoutOpen));
             }
         }
         
@@ -132,6 +153,13 @@ namespace Ebertin.ViewModels
             set => SetProperty(ref _apiKeyDisplay, value);
         }
         
+        public string GoogleMapsApiKey
+        {
+            get => _googleMapsApiKey;
+            set => SetProperty(ref _googleMapsApiKey, value);
+        }
+        
+        
         public bool IsSystemMessageVisible
         {
             get => _isSystemMessageVisible;
@@ -148,6 +176,70 @@ namespace Ebertin.ViewModels
         {
             get => _isProcessing;
             set => SetProperty(ref _isProcessing, value);
+        }
+        
+        // Birth date and time text properties (for TextBox controls)
+        public string BirthDateText
+        {
+            get => _birthDateText;
+            set => SetProperty(ref _birthDateText, value);
+        }
+        
+        public string BirthTimeText
+        {
+            get => _birthTimeText;
+            set => SetProperty(ref _birthTimeText, value);
+        }
+        
+        // Location autocomplete properties
+        public string LocationSearchText
+        {
+            get => _locationSearchText;
+            set
+            {
+                if (SetProperty(ref _locationSearchText, value))
+                {
+                    // Update suggestions when text changes
+                    UpdateLocationSuggestions();
+                }
+            }
+        }
+
+        public bool IsSuggestionsVisible
+        {
+            get => _isSuggestionsVisible;
+            set => SetProperty(ref _isSuggestionsVisible, value);
+        }
+
+        public ObservableCollection<string> LocationSuggestions
+        {
+            get => _locationSuggestions;
+            set => SetProperty(ref _locationSuggestions, value);
+        }
+
+        public string SelectedLocationSuggestion
+        {
+            get => _selectedLocationSuggestion;
+            set
+            {
+                if (SetProperty(ref _selectedLocationSuggestion, value) && value != null)
+                {
+                    // First hide the suggestions
+                    IsSuggestionsVisible = false;
+            
+                    // Then update the text
+                    LocationSearchText = value;
+            
+                    // Clear suggestions to prevent them from showing if popup gets reopened
+                    LocationSuggestions.Clear();
+                }
+            }
+        }
+        
+        public SystemMessageType SystemMessageTypeValue
+        {
+            get => _systemMessageType;
+            set => SetProperty(ref _systemMessageType, value);
         }
 
         // Commands
@@ -166,11 +258,13 @@ namespace Ebertin.ViewModels
         public ICommand OpenConfigurationModalCommand { get; }
         public ICommand CloseConfigurationModalCommand { get; }
         public ICommand SaveConfigurationCommand { get; }
+        public ICommand SelectLocationCommand { get; }
 
         public MainWindowViewModel()
         {
-            // Initialize API service
+            // Initialize API and location services
             _apiService = new ApiService(_configManager);
+            _locationService = new LocationService();
             
             // Load configuration values
             _apiLocation = _configManager.ApiLocation;
@@ -196,7 +290,13 @@ namespace Ebertin.ViewModels
             OpenConfigurationModalCommand = new RelayCommand(OpenConfigurationWindow);
             CloseConfigurationModalCommand = new RelayCommand(CloseConfigurationWindow);
             SaveConfigurationCommand = new RelayCommand(SaveConfiguration);
+            SelectLocationCommand = new RelayCommand<string>(SelectLocation);
             
+            // Initialize location and date/time properties
+            _locationSearchText = string.Empty;
+            _isSuggestionsVisible = false;
+            _birthDateText = string.Empty;
+            _birthTimeText = string.Empty;
             
             FlyoutWidth = 0; // Initially closed
             IsFlyoutOpen = false;
@@ -264,7 +364,7 @@ namespace Ebertin.ViewModels
         {
             // Toggle the flyout
             IsFlyoutOpen = !IsFlyoutOpen;
-            FlyoutWidth = IsFlyoutOpen ? 300 : 0;
+            FlyoutWidth = IsFlyoutOpen ? 425 : 0; // Changed from 300 to 425
             Console.WriteLine($"Flyout toggled: {IsFlyoutOpen}, Width: {FlyoutWidth}");
         }
 
@@ -273,6 +373,10 @@ namespace Ebertin.ViewModels
             // Close the flyout
             IsFlyoutOpen = false;
             FlyoutWidth = 0;
+            Console.WriteLine("Flyout closed");
+            
+            // Also hide any suggestion popups
+            IsSuggestionsVisible = false;
             Console.WriteLine("Flyout closed");
         }
 
@@ -337,16 +441,23 @@ namespace Ebertin.ViewModels
         
         private async Task CreateApiKeyAsync()
         {
+            
             // Validate input
+            if (string.IsNullOrWhiteSpace(ApiLocation))
+            {
+                ShowSystemMessage("Please enter a valid API endpoint", SystemMessageType.Error);
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(Username))
             {
-                ShowSystemMessage("Please enter a username", false);
+                ShowSystemMessage("Please enter a username", SystemMessageType.Error);
                 return;
             }
             
             if (string.IsNullOrWhiteSpace(Email))
             {
-                ShowSystemMessage("Please enter an email address", false);
+                ShowSystemMessage("Please enter an email address", SystemMessageType.Error);
                 return;
             }
             
@@ -354,23 +465,24 @@ namespace Ebertin.ViewModels
             {
                 // Show processing state
                 IsProcessing = true;
-                ShowSystemMessage("Registering with API...", true);
+                ShowSystemMessage("Registering with API...", SystemMessageType.Success);
+
                 
                 // Register for an API key
-                string apiKey = await _apiService.RegisterApiKeyAsync(Username, Email);
+                string apiKey = await _apiService.RegisterApiKeyAsync(ApiLocation,Username, Email);
                 
                 // Update display
                 ApiKeyDisplay = apiKey;
                 
                 // Show success message
-                ShowSystemMessage("API Key created successfully!", true);
+                ShowSystemMessage("API Key created successfully!", SystemMessageType.Success);
                 
                 Console.WriteLine("API key registration successful");
             }
             catch (Exception ex)
             {
                 // Show error message
-                ShowSystemMessage($"Error: {ex.Message}", false);
+                ShowSystemMessage($"Error: {ex.Message}", SystemMessageType.Error);
                 Console.WriteLine($"API key registration failed: {ex.Message}");
             }
             finally
@@ -385,7 +497,7 @@ namespace Ebertin.ViewModels
             // Validate input
             if (string.IsNullOrWhiteSpace(Email))
             {
-                ShowSystemMessage("Please enter an email address", false);
+                ShowSystemMessage("Please enter an email address", SystemMessageType.Error);
                 return;
             }
     
@@ -393,7 +505,7 @@ namespace Ebertin.ViewModels
             {
                 // Show processing state
                 IsProcessing = true;
-                ShowSystemMessage("Retrieving API key...", true);
+                ShowSystemMessage("Retrieving API key...", SystemMessageType.Success);
         
                 // Call the API to retrieve the key
                 string apiKey = await _apiService.GetApiKeyAsync(Email);
@@ -402,7 +514,7 @@ namespace Ebertin.ViewModels
                 ApiKeyDisplay = apiKey;
         
                 // Show success message
-                ShowSystemMessage("API Key retrieved successfully.", true);
+                ShowSystemMessage("API Key retrieved successfully.", SystemMessageType.Success);
         
                 Console.WriteLine("API Key retrieved from server");
             }
@@ -412,7 +524,7 @@ namespace Ebertin.ViewModels
                 string detailedMessage = GetDetailedExceptionMessage(ex);
         
                 // Show error message with more details
-                ShowSystemMessage($"Error retrieving API key: {detailedMessage}", false);
+                ShowSystemMessage($"Error retrieving API key: {detailedMessage}", SystemMessageType.Error);
                 Console.WriteLine($"Error retrieving API key: {detailedMessage}");
         
                 // Try to get key from local config as fallback
@@ -420,8 +532,7 @@ namespace Ebertin.ViewModels
                 if (!string.IsNullOrEmpty(localApiKey))
                 {
                     ApiKeyDisplay = localApiKey;
-                    ShowSystemMessage("Using locally stored API key instead.", true);
-                }
+                    ShowSystemMessage("Using locally stored API key instead.", SystemMessageType.Warning);                }
             }
             finally
             {
@@ -457,7 +568,7 @@ namespace Ebertin.ViewModels
                 _configManager.SaveConfiguration();
                 
                 // Show success message
-                ShowSystemMessage("Configuration saved successfully.", true);
+                ShowSystemMessage("Configuration saved successfully.", SystemMessageType.Success);
                 
                 Console.WriteLine($"Configuration saved: API_LOCATION={ApiLocation}");
                 
@@ -468,19 +579,83 @@ namespace Ebertin.ViewModels
             {
                 Console.WriteLine($"Error saving configuration: {ex.Message}");
                 // Show error message
-                ShowSystemMessage($"Error saving configuration: {ex.Message}", false);
+                ShowSystemMessage($"Error saving configuration: {ex.Message}", SystemMessageType.Error);
             }
         }
         
-        private void ShowSystemMessage(string message, bool isSuccess)
+        // ShowSystemMessage method
+        private void ShowSystemMessage(string message, SystemMessageType messageType)
         {
             SystemMessageText = message;
+            SystemMessageTypeValue = messageType;
             IsSystemMessageVisible = true;
-            
-            // Assuming you have a way to set the message type (success, error, etc.)
-            // SystemMessageType = isSuccess ? MessageType.Success : MessageType.Error;
-            
-            Console.WriteLine($"System message ({(isSuccess ? "Success" : "Error")}): {message}");
+    
+            Console.WriteLine($"System message ({messageType}): {message}");
+        }
+        
+        // Method to select a location from the suggestions
+        public void SelectLocation(string location)
+        {
+            if (location != null)
+            {
+                LocationSearchText = location;
+                IsSuggestionsVisible = false;
+                Console.WriteLine($"Selected location: {location}");
+            }
+        }
+        
+        // Method to update location suggestions
+        private async void UpdateLocationSuggestions()
+        {
+            // Avoid concurrent updates
+            if (_isUpdatingSuggestions)
+                return;
+        
+            _isUpdatingSuggestions = true;
+    
+            try
+            {
+                // Don't show suggestions if the text is empty or too short
+                if (string.IsNullOrWhiteSpace(LocationSearchText) || LocationSearchText.Length < 2)
+                {
+                    IsSuggestionsVisible = false;
+                    LocationSuggestions.Clear();
+                    return;
+                }
+        
+                // Simple check to avoid showing suggestions for already selected text
+                foreach (var suggestion in LocationSuggestions)
+                {
+                    if (LocationSearchText.Equals(suggestion, StringComparison.OrdinalIgnoreCase))
+                    {
+                        IsSuggestionsVisible = false;
+                        return;
+                    }
+                }
+        
+                // Get suggestions from the service
+                var suggestions = await _locationService.GetLocationSuggestionsAsync(LocationSearchText);
+        
+                // Update the suggestions collection
+                LocationSuggestions.Clear();
+                foreach (var suggestion in suggestions)
+                {
+                    LocationSuggestions.Add(suggestion);
+                }
+        
+                // Show suggestions if there are any
+                IsSuggestionsVisible = LocationSuggestions.Count > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching location suggestions: {ex.Message}");
+                IsSuggestionsVisible = false;
+                LocationSuggestions.Clear();
+            }
+            finally
+            {
+                _isUpdatingSuggestions = false;
+            }
         }
     }
 }

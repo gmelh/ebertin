@@ -362,7 +362,8 @@
             <!-- Main Content - Will be under the flyout -->
             <ContentControl Content="{Binding CurrentCanvas}" 
                             PointerReleased="Canvas_PointerReleased"/>
-                       
+            
+            
             <!-- Flyout Panel - Overlays content -->
             <Border HorizontalAlignment="Left"
                     VerticalAlignment="Stretch"
@@ -375,15 +376,211 @@
                         <DoubleTransition Property="Width" Duration="0:0:0.3" Easing="CubicEaseOut"/>
                     </Transitions>
                 </Border.Transitions>
-                <Grid Width="300">
-                    <StackPanel Margin="10">
-                        <TextBlock Text="Flyout Panel" 
-                                   Foreground="White" 
-                                   FontSize="16"
-                                   Margin="0,0,0,20"/>
+                <Grid Width="425">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Header -->
+                    <TextBlock Grid.Row="0"
+                               Text="Chart Data Entry" 
+                               Foreground="White" 
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Margin="30,20,30,20"
+                               HorizontalAlignment="Left"/>
+                    
+                    <!-- Content Area with Form Fields -->
+                    <StackPanel Grid.Row="1" 
+                                Margin="30,0,30,0"
+                                Spacing="20"
+                                HorizontalAlignment="Left">
+                        
+                        <!-- Name Field -->
+                        <StackPanel Width="365">
+                            <TextBlock Text="Name" 
+                                       Foreground="White" 
+                                       Margin="0,0,0,5"/>
+                            <TextBox Watermark="Enter your full name"
+                                     Height="35"
+                                     Padding="8,0"
+                                     FontSize="14"
+                                     VerticalContentAlignment="Center">
+                                <TextBox.Styles>
+                                    <Style Selector="TextBox">
+                                        <Setter Property="Background" Value="#3E4C54"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="BorderBrush" Value="#4A5A64"/>
+                                    </Style>
+                                    <Style Selector="TextBox:focus /template/ Border">
+                                        <Setter Property="BorderBrush" Value="#6A7A84"/>
+                                    </Style>
+                                    <Style Selector="TextBox /template/ TextPresenter#PART_TextPresenter">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                    <Style Selector="TextBox /template/ TextBlock#PART_Watermark">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </TextBox.Styles>
+                            </TextBox>
+                        </StackPanel>
+                        
+                        <!-- Date and Time of Birth Field -->
+                        <StackPanel Width="365">
+                            <TextBlock Text="Date and Time of Birth" 
+                                       Foreground="White" 
+                                       Margin="0,0,0,5"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="2*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Date TextBox -->
+                                <TextBox Grid.Column="0"
+                                         Text="{Binding BirthDateText}"
+                                         Height="35"
+                                         Watermark="DD MMM YYYY"
+                                         Padding="8,0"
+                                         FontSize="14"
+                                         VerticalContentAlignment="Center"
+                                         Margin="0,0,5,0">
+                                    <TextBox.Styles>
+                                        <Style Selector="TextBox">
+                                            <Setter Property="Background" Value="#3E4C54"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="BorderBrush" Value="#4A5A64"/>
+                                        </Style>
+                                        <Style Selector="TextBox:focus /template/ Border">
+                                            <Setter Property="BorderBrush" Value="#6A7A84"/>
+                                        </Style>
+                                        <Style Selector="TextBox /template/ TextPresenter#PART_TextPresenter">
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                        <Style Selector="TextBox /template/ TextBlock#PART_Watermark">
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </TextBox.Styles>
+                                </TextBox>
+                                
+                                <TextBlock Grid.Column="1" 
+                                           Text="at" 
+                                           VerticalAlignment="Center"
+                                           Foreground="White"
+                                           Margin="5,0"/>
+                                
+                                <!-- Time TextBox -->
+                                <TextBox Grid.Column="2"
+                                         Text="{Binding BirthTimeText}"
+                                         Height="35"
+                                         Watermark="HH:MM"
+                                         Padding="8,0"
+                                         FontSize="14"
+                                         VerticalContentAlignment="Center"
+                                         Margin="5,0,0,0">
+                                    <TextBox.Styles>
+                                        <Style Selector="TextBox">
+                                            <Setter Property="Background" Value="#3E4C54"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="BorderBrush" Value="#4A5A64"/>
+                                        </Style>
+                                        <Style Selector="TextBox:focus /template/ Border">
+                                            <Setter Property="BorderBrush" Value="#6A7A84"/>
+                                        </Style>
+                                        <Style Selector="TextBox /template/ TextPresenter#PART_TextPresenter">
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                        <Style Selector="TextBox /template/ TextBlock#PART_Watermark">
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </TextBox.Styles>
+                                </TextBox>
+                            </Grid>
+                        </StackPanel>
+                        
+                        <!-- Location of Birth Field with Autocomplete -->
+                        <StackPanel Width="365">
+                            <TextBlock Text="Location of Birth" 
+                                       Foreground="White" 
+                                       Margin="0,0,0,5"/>
+                            <Grid>
+                                <TextBox Name="LocationTextBox"
+                                         Text="{Binding LocationSearchText, Mode=TwoWay}"
+                                         Watermark="Enter city and country"
+                                         Height="35"
+                                         Padding="8,0"
+                                         FontSize="14"
+                                         VerticalContentAlignment="Center"
+                                         TextChanged="LocationTextBox_TextChanged"
+                                         LostFocus="LocationTextBox_LostFocus">
+                                    <TextBox.Styles>
+                                        <Style Selector="TextBox">
+                                            <Setter Property="Background" Value="#3E4C54"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="BorderBrush" Value="#4A5A64"/>
+                                        </Style>
+                                        <Style Selector="TextBox:focus /template/ Border">
+                                            <Setter Property="BorderBrush" Value="#6A7A84"/>
+                                        </Style>
+                                        <Style Selector="TextBox /template/ TextPresenter#PART_TextPresenter">
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                        <Style Selector="TextBox /template/ TextBlock#PART_Watermark">
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </TextBox.Styles>
+                                </TextBox>
+                                
+                                <!-- Autocomplete Popup -->
+                                <Popup IsOpen="{Binding IsSuggestionsVisible}"
+                                       PlacementTarget="{Binding #LocationTextBox}"
+                                       VerticalOffset="5"
+                                       Width="{Binding #LocationTextBox.Bounds.Width}">
+                                    <Border Background="#3E4C54"
+                                            BorderBrush="#4A5A64"
+                                            BorderThickness="1">
+                                        <ListBox ItemsSource="{Binding LocationSuggestions}"
+                                                 Background="Transparent"
+                                                 Foreground="White"
+                                                 MaxHeight="200"
+                                                 SelectionMode="Single"
+                                                 SelectionChanged="LocationSuggestion_Selected">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding}"
+                                                               Foreground="White" 
+                                                               Padding="5"/>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                            <ListBox.Styles>
+                                                <Style Selector="ListBoxItem">
+                                                    <Setter Property="Padding" Value="8,5"/>
+                                                </Style>
+                                                <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+                                                    <Setter Property="Background" Value="#4A5A64"/>
+                                                </Style>
+                                                <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+                                                    <Setter Property="Background" Value="#5A6A74"/>
+                                                </Style>
+                                            </ListBox.Styles>
+                                        </ListBox>
+                                    </Border>
+                                </Popup>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                    
+                    <!-- Footer with Close Button -->
+                    <Grid Grid.Row="2" 
+                          Margin="30,20,30,20">
                         <Button Content="Close" 
                                 Width="100" 
                                 Height="30"
+                                HorizontalAlignment="Right"
+                                HorizontalContentAlignment="Center"
                                 Command="{Binding CloseFlyoutCommand}">
                             <Button.Styles>
                                 <Style Selector="Button">
@@ -396,9 +593,10 @@
                                 </Style>
                             </Button.Styles>
                         </Button>
-                    </StackPanel>
+                    </Grid>
                 </Grid>
-            </Border>
+            </Border>            
+            
             
             <!-- Pie Menu Popup -->
             <controls:PieMenuPopup x:Name="PieMenuPopup" 
@@ -412,7 +610,7 @@
                     IsHitTestVisible="{Binding IsApiKeyModalVisible}"
                     ZIndex="100">
                 <Border Width="420"
-                        Height="480"
+                        Height="700"
                         Background="#2C3A42"
                         CornerRadius="4"
                         BorderBrush="#4A5A64"
@@ -429,11 +627,116 @@
                                        Margin="0,0,0,15"/>
                             
                             <!-- System message placeholder -->
-                            <Border Classes="message-success"
-                                    IsVisible="{Binding IsSystemMessageVisible}">
+                            <Border IsVisible="{Binding IsSystemMessageVisible}"
+                                    Padding="10"
+                                    Margin="5"
+                                    CornerRadius="3">
+                                <Border.Styles>
+                                    <Style Selector="Border">
+                                        <!-- Default style -->
+                                        <Setter Property="Background" Value="#DFF0D8"/>
+                                        <Setter Property="BorderBrush" Value="#3C763D"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                    </Style>
+        
+                                    <!-- Success style (already default) -->
+        
+                                    <!-- Warning style -->
+                                    <Style Selector="Border[Tag=Warning]">
+                                        <Setter Property="Background" Value="#FCF8E3"/>
+                                        <Setter Property="BorderBrush" Value="#8A6D3B"/>
+                                    </Style>
+        
+                                    <!-- Error style -->
+                                    <Style Selector="Border[Tag=Error]">
+                                        <Setter Property="Background" Value="#F2DEDE"/>
+                                        <Setter Property="BorderBrush" Value="#A94442"/>
+                                    </Style>
+                                </Border.Styles>
+    
+                                <Border.Tag>
+                                    <Binding Path="SystemMessageTypeValue" />
+                                </Border.Tag>
+    
                                 <TextBlock Text="{Binding SystemMessageText}"
-                                           TextWrapping="Wrap"/>
+                                           TextWrapping="Wrap">
+                                    <TextBlock.Styles>
+                                        <Style Selector="TextBlock">
+                                            <Setter Property="Foreground" Value="#3C763D"/>
+                                        </Style>
+                                        <Style Selector="Border[Tag=Warning] > TextBlock">
+                                            <Setter Property="Foreground" Value="#8A6D3B"/>
+                                        </Style>
+                                        <Style Selector="Border[Tag=Error] > TextBlock">
+                                            <Setter Property="Foreground" Value="#A94442"/>
+                                        </Style>
+                                    </TextBlock.Styles>
+                                </TextBlock>
                             </Border>
+                            
+                            <!-- Google Maps API Heading -->
+                            <TextBlock Text="Google Maps API"
+                                       Foreground="White"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10"/>
+                            
+                            <!-- Added informational message with tooltip -->
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBlock Text="Required for location services"
+                                           Foreground="#D0D0D0"
+                                           Grid.Column="0" 
+                                           VerticalAlignment="Center"/>
+                                
+                                <Button Grid.Column="1"
+                                        Width="20" 
+                                        Height="20"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Padding="0"
+                                        Margin="8,0,0,0"
+                                        ToolTip.Tip="A Google Maps API key is required to work with location information.&#x0a;If you don't already have a Google Maps subscription. refer to the documentation on how to set one up.">
+                                    <Border Width="20" 
+                                            Height="20" 
+                                            Background="#4A5A64" 
+                                            CornerRadius="10">
+                                        <TextBlock Text="?"
+                                                   Foreground="White"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center"
+                                                   TextAlignment="Center"/>
+                                    </Border>
+                                </Button>
+                            </Grid>
+                            
+                            <!-- Google Maps API Key field (moved to top) -->
+                            <TextBlock Text="Google Maps API Key" Foreground="White" Margin="0,10,0,5"/>
+                            <TextBox Text="{Binding GoogleMapsApiKey}"
+                                     Watermark="Enter Google Maps API key"
+                                     Background="#36454F"
+                                     Foreground="White"
+                                     BorderBrush="#4A5A64"
+                                     Margin="0,0,0,20"/>
+                            
+                            <!-- Horizontal separator (hr equivalent) -->
+                            <Border Height="1" 
+                                    Background="#4A5A64" 
+                                    Margin="0,10,0,20" 
+                                    HorizontalAlignment="Stretch"/>
+                            
+                            <!-- Ebertin Method API Heading -->
+                            <TextBlock Text="Ebertin Method API"
+                                       Foreground="White"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10"/>
                             
                             <!-- Account settings content here -->
                             <Grid Margin="0,0,0,10">
@@ -486,24 +789,7 @@
                                          Grid.Column="0" 
                                          Margin="0,0,5,0"/>
                                          
-                                <Button Grid.Column="1"
-                                        Width="40" 
-                                        Height="40"
-                                        Command="{Binding SaveConfigurationCommand}"
-                                        Background="#3E4C54"
-                                        BorderBrush="#4A5A64"
-                                        Foreground="White"
-                                        ToolTip.Tip="Save API Location">
-                                    <Canvas Width="24" Height="24">
-                                        <!-- Save Icon (floppy disk) -->
-                                        <Rectangle Canvas.Left="3" Canvas.Top="3" Width="18" Height="18" 
-                                                   Stroke="White" StrokeThickness="1.5" Fill="Transparent"/>
-                                        <Rectangle Canvas.Left="6" Canvas.Top="8" Width="12" Height="8" 
-                                                   Stroke="White" StrokeThickness="1.5" Fill="Transparent"/>
-                                        <Rectangle Canvas.Left="8" Canvas.Top="3" Width="8" Height="4" 
-                                                   Stroke="White" StrokeThickness="1.5" Fill="Transparent"/>
-                                    </Canvas>
-                                </Button>
+                            
                             </Grid>
                             
                             <!-- Form fields -->
@@ -536,36 +822,98 @@
                         </StackPanel>
                         
                         <!-- Action buttons -->
-                        <StackPanel Orientation="Horizontal"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Bottom"
-                                    Margin="20,0,0,20"
-                                    Spacing="10">
-                                    
-                            <Button Content="Create Key"
-                                    Command="{Binding CreateApiKeyCommand}"
-                                    Classes="close-button"
-                                    Width="120"
-                                    IsEnabled="{Binding !IsProcessing}"/>
-                                    
-                            <Button Content="Retrieve Key"
-                                    Command="{Binding RetrieveApiKeyCommand}"
-                                    Classes="close-button"
-                                    Width="100"
-                                    IsEnabled="{Binding !IsProcessing}"/>
-                        </StackPanel>
-                        
-                        <!-- Close button in bottom right corner -->
-                        <Button Content="Close"
-                                Command="{Binding CloseApiKeyModalCommand}"
-                                Classes="close-button"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Bottom"
-                                Margin="0,0,20,20"/>
+                        <Grid HorizontalAlignment="Stretch"
+                              VerticalAlignment="Bottom"
+                              Margin="20,0,20,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- Left-side buttons (Create and Retrieve) -->
+                            <StackPanel Grid.Column="0"
+                                        Orientation="Horizontal"
+                                        Spacing="10">
+                                            
+                                <Button Command="{Binding CreateApiKeyCommand}"
+                                        Width="36" 
+                                        Height="36"
+                                        Background="#3E4C54"
+                                        BorderBrush="#4A5A64"
+                                        Foreground="White"
+                                        IsEnabled="{Binding !IsProcessing}"
+                                        ToolTip.Tip="Create New API Key">
+                                    <Canvas Width="28" Height="28">
+                                        <!-- Plus sign icon -->
+                                        <Path Data="M14,4 L14,24 M4,14 L24,14" 
+                                              Stroke="White" 
+                                              StrokeThickness="3" 
+                                              StrokeLineCap="Round"/>
+                                    </Canvas>
+                                </Button>
+                                                
+                                <Button Command="{Binding RetrieveApiKeyCommand}"
+                                        Width="36" 
+                                        Height="36"
+                                        Background="#3E4C54"
+                                        BorderBrush="#4A5A64"
+                                        Foreground="White"
+                                        IsEnabled="{Binding !IsProcessing}"
+                                        ToolTip.Tip="Retrieve Existing API Key">
+                                    <Canvas Width="28" Height="28">
+                                        <!-- Downward arrow icon -->
+                                        <Path Data="M14,6 L14,20 M8,14 L14,20 L20,14" 
+                                              Stroke="White" 
+                                              StrokeThickness="3" 
+                                              StrokeLineCap="Round"/>
+                                    </Canvas>
+                                </Button>
+                            </StackPanel>
+                            
+                            <!-- Right-side buttons (Save and Close) -->
+                            <StackPanel Grid.Column="2"
+                                        Orientation="Horizontal"
+                                        Spacing="10">
+                                        
+                                <Button Command="{Binding SaveConfigurationCommand}"
+                                        Width="36" 
+                                        Height="36"
+                                        Background="#3E4C54"
+                                        BorderBrush="#4A5A64"
+                                        Foreground="White"
+                                        ToolTip.Tip="Save API Location">
+                                    <Canvas Width="28" Height="28">
+                                        <!-- Save Icon (floppy disk) -->
+                                        <Rectangle Canvas.Left="4" Canvas.Top="4" Width="20" Height="20" 
+                                                   Stroke="White" StrokeThickness="2.3" Fill="Transparent"/>
+                                        <Rectangle Canvas.Left="7" Canvas.Top="12" Width="14" Height="9" 
+                                                   Stroke="White" StrokeThickness="2.3" Fill="Transparent"/>
+                                        <Rectangle Canvas.Left="11" Canvas.Top="4" Width="6" Height="4" 
+                                                   Stroke="White" StrokeThickness="2.3" Fill="Transparent"/>
+                                    </Canvas>
+                                </Button>
+                                
+                                <Button Command="{Binding CloseApiKeyModalCommand}"
+                                        Width="36" 
+                                        Height="36"
+                                        Background="#3E4C54"
+                                        BorderBrush="#4A5A64"
+                                        Foreground="White"
+                                        ToolTip.Tip="Close">
+                                    <Canvas Width="28" Height="28">
+                                        <!-- Close Icon (X) -->
+                                        <Path Data="M7,7 L21,21 M7,21 L21,7" 
+                                              Stroke="White" 
+                                              StrokeThickness="2.8" 
+                                              StrokeLineCap="Round"/>
+                                    </Canvas>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
                     </Grid>
                 </Border>
-            </Border> 
-            
+            </Border>
         </Grid>
     </DockPanel>
 </Window>
