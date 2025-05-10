@@ -18,7 +18,7 @@ namespace Ebertin.Services
         public LocationService(string apiKey = null)
         {
             _httpClient = new HttpClient();
-            _apiKey = "AIzaSyAfsio4k3J8zZvkgG0ZPTrY-NlTHpZaJc4"; // Replace with your actual API key
+            _apiKey = ""; // Replace with your actual API key
         }
         
         public async Task<List<string>> GetLocationSuggestionsAsync(string searchText)
