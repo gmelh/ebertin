@@ -11,14 +11,16 @@ namespace Ebertin.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey; // Google Maps API key
+        private readonly ConfigurationManager _configManager;
         
         // Cache for suggestions to reduce API calls
         private Dictionary<string, List<string>> _suggestionCache = new Dictionary<string, List<string>>();
         
-        public LocationService(string apiKey = null)
+        public LocationService(ConfigurationManager configManager)
         {
+            _configManager = configManager ?? throw new ArgumentNullException(nameof(configManager));
             _httpClient = new HttpClient();
-            _apiKey = ""; // Replace with your actual API key
+            _apiKey = _configManager.ApiGoogleKey; // Replace with your actual API key
         }
         
         public async Task<List<string>> GetLocationSuggestionsAsync(string searchText)

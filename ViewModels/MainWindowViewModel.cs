@@ -265,7 +265,7 @@ namespace Ebertin.ViewModels
         {
             // Initialize API and location services
             _apiService = new ApiService(_configManager);
-            _locationService = new LocationService();
+            _locationService = new LocationService(_configManager);
             
             // Load configuration values
             _apiLocation = _configManager.ApiLocation;
