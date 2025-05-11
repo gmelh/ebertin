@@ -13,6 +13,10 @@ namespace Ebertin.Services
         private const string CONFIG_FILE_PATH = "/Configuration/Ebertin.cfg";
         private const string API_LOCATION_KEY = "API_LOCATION";
         private const string API_KEY_KEY = "API_KEY";
+        private const string API_USER = "API_USER";
+        private const string API_EMAIL = "API_EMAIL";
+        private const string API_GOOGLE_KEY = "API_GOOGLE_KEY";
+        
         
         private readonly string _configFilePath;
         private Dictionary<string, string> _configValues;
@@ -50,6 +54,33 @@ namespace Ebertin.Services
         {
             get => GetConfigValue(API_KEY_KEY, string.Empty);
             set => SetConfigValue(API_KEY_KEY, value);
+        }
+        
+        /// <summary>
+        /// Gets or sets the configured API user.
+        /// </summary>
+        public string ApiUser
+        {
+            get => GetConfigValue(API_USER, string.Empty);
+            set => SetConfigValue(API_USER, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the configured API email.
+        /// </summary>
+        public string ApiEmail
+        {
+            get => GetConfigValue(API_EMAIL, string.Empty);
+            set => SetConfigValue(API_EMAIL, value);
+        }
+        
+        /// <summary>
+        /// Gets or sets the configured API Google key.
+        /// </summary>
+        public string ApiGoogleKey
+        {
+            get => GetConfigValue(API_GOOGLE_KEY, string.Empty);
+            set => SetConfigValue(API_GOOGLE_KEY, value);
         }
         
         /// <summary>

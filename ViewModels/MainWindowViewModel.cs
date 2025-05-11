@@ -32,9 +32,10 @@ namespace Ebertin.ViewModels
         private bool _isConfigurationModalVisible;
         
         private string _apiLocation = "https://api.ebertinmethod.com";
-        private string _username = "";
-        private string _email = "";
-        private string _googleMapsApiKey = "";
+        private string _api_key = "";
+        private string _api_user = "";
+        private string _api_email = "";
+        private string _api_google_key = "";
         private string _apiKeyDisplay = "Your API key will appear here";
         private bool _isSystemMessageVisible;
         private string _systemMessageText;
@@ -137,14 +138,14 @@ namespace Ebertin.ViewModels
         // API Key related properties
         public string Username
         {
-            get => _username;
-            set => SetProperty(ref _username, value);
+            get => _api_user;
+            set => SetProperty(ref _api_user, value);
         }
         
         public string Email
         {
-            get => _email;
-            set => SetProperty(ref _email, value);
+            get => _api_email;
+            set => SetProperty(ref _api_email, value);
         }
         
         public string ApiKeyDisplay
@@ -155,8 +156,8 @@ namespace Ebertin.ViewModels
         
         public string GoogleMapsApiKey
         {
-            get => _googleMapsApiKey;
-            set => SetProperty(ref _googleMapsApiKey, value);
+            get => _api_google_key;
+            set => SetProperty(ref _api_google_key, value);
         }
         
         
@@ -268,10 +269,14 @@ namespace Ebertin.ViewModels
             
             // Load configuration values
             _apiLocation = _configManager.ApiLocation;
-            string apiKey = _configManager.ApiKey;
-            if (!string.IsNullOrEmpty(apiKey))
+            _api_user = _configManager.ApiUser;
+            _api_email = _configManager.ApiEmail;
+            _api_key = _configManager.ApiKey;
+            _api_google_key = _configManager.ApiGoogleKey;
+            
+            if (!string.IsNullOrEmpty(_api_key))
             {
-                _apiKeyDisplay = apiKey;
+                _apiKeyDisplay = _api_key;
             }
             
             // Initialize commands

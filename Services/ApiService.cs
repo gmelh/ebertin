@@ -76,6 +76,7 @@ namespace Ebertin.Services
                 Console.WriteLine($"Response received: {responseContent}");
 
                 // Try to extract the API key using the flexible method
+                /*
                 string apiKey = ExtractApiKey(responseContent);
                 
                 if (string.IsNullOrEmpty(apiKey))
@@ -83,11 +84,13 @@ namespace Ebertin.Services
                     throw new Exception($"Could not extract API key from response: {responseContent}");
                 }
                 
+                
                 // Save the API key to configuration
                 _configManager.ApiKey = apiKey;
+                */
                 await _configManager.SaveConfigurationAsync();
                 
-                return apiKey;
+                return "status: OK";
             }
             catch (HttpRequestException ex)
             {
@@ -161,6 +164,8 @@ namespace Ebertin.Services
                 
                 // Save the API key to configuration
                 _configManager.ApiKey = apiKey;
+                _configManager.ApiEmail = email;
+                
                 await _configManager.SaveConfigurationAsync();
                 
                 return apiKey;
