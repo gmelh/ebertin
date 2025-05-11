@@ -177,7 +177,7 @@
                 <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
             </MenuItem>
             <MenuItem Header="_Settings">
-                <MenuItem Header="_API Key" Command="{Binding OpenApiKeyWindowCommand}"/>
+                <MenuItem Header="_API Keys" Command="{Binding OpenApiKeyWindowCommand}"/>
             </MenuItem>
         </Menu>
         
