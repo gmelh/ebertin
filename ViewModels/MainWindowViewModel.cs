@@ -6,17 +6,12 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Ebertin.Views;
 using Ebertin.Services;
+using Ebertin.Models;
 using System.Collections.ObjectModel;
 
 namespace Ebertin.ViewModels
 {
-    // System message type
-    public enum SystemMessageType
-    {
-        Success,
-        Warning,  
-        Error
-    }
+
     
     public partial class MainWindowViewModel : ObservableObject
     {
@@ -44,6 +39,7 @@ namespace Ebertin.ViewModels
         private SystemMessageType _systemMessageType;
         
         // Birth Date and Time fields for TextBox controls
+        private string _name;
         private string _birthDateText;
         private string _birthTimeText;
         
@@ -53,6 +49,7 @@ namespace Ebertin.ViewModels
         private ObservableCollection<string> _locationSuggestions = new ObservableCollection<string>();
         private string _selectedLocationSuggestion;
         private readonly LocationService _locationService;
+        private readonly ChartDataService _chartDataService;
         
         // Initialize the configuration manager and API service
         private readonly ConfigurationManager _configManager = new ConfigurationManager();
@@ -192,6 +189,19 @@ namespace Ebertin.ViewModels
             set => SetProperty(ref _birthTimeText, value);
         }
         
+        public string Name
+        {
+            get => _name;
+            set 
+            { 
+                if (_name != value)
+                {
+                    _name = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        
         // Location autocomplete properties
         public string LocationSearchText
         {
@@ -260,6 +270,8 @@ namespace Ebertin.ViewModels
         public ICommand CloseConfigurationModalCommand { get; }
         public ICommand SaveConfigurationCommand { get; }
         public ICommand SelectLocationCommand { get; }
+        
+        public ICommand SubmitChartDataCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -296,6 +308,7 @@ namespace Ebertin.ViewModels
             CloseConfigurationModalCommand = new RelayCommand(CloseConfigurationWindow);
             SaveConfigurationCommand = new RelayCommand(SaveConfiguration);
             SelectLocationCommand = new RelayCommand<string>(SelectLocation);
+            SubmitChartDataCommand = new RelayCommand(async () => await SubmitChartDataAsync());
             
             // Initialize location and date/time properties
             _locationSearchText = string.Empty;
@@ -543,6 +556,62 @@ namespace Ebertin.ViewModels
             {
                 // Reset processing state
                 IsProcessing = false;
+            }
+        }
+        
+        private async Task SubmitChartDataAsync()
+        {
+            try
+            {
+                // Validate input fields
+                if (string.IsNullOrWhiteSpace(Name))
+                {
+                    // Show error message
+                    await Messages.ShowErrorMessage("Please enter a name.");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(BirthDateText))
+                {
+                    await Messages.ShowErrorMessage("Please enter a birth date.");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(BirthTimeText))
+                {
+                    await Messages.ShowErrorMessage("Please enter a birth time.");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(LocationSearchText))
+                {
+                    await Messages.ShowErrorMessage("Please enter a birth location.");
+                    return;
+                }
+
+                // Call the service to submit the data
+                await _chartDataService.SubmitChartDataAsync(
+                    Name,
+                    BirthDateText,
+                    BirthTimeText,
+                    LocationSearchText
+                );
+
+                // Show success message
+                await Messages.ShowSuccessMessage("Chart data submitted successfully!");
+        
+                // Optionally clear the form
+                Name = string.Empty;
+                BirthDateText = string.Empty;
+                BirthTimeText = string.Empty;
+                LocationSearchText = string.Empty;
+        
+                // Optionally close the flyout
+                CloseFlyout();
+            }
+            catch (Exception ex)
+            {
+                await Messages.ShowErrorMessage($"Failed to submit chart data: {ex.Message}");
             }
         }
         

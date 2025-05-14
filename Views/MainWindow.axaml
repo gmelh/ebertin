@@ -365,6 +365,7 @@
             
             
             <!-- Flyout Panel - Overlays content -->
+<!-- Flyout Panel - Overlays content -->
             <Border HorizontalAlignment="Left"
                     VerticalAlignment="Stretch"
                     Background="#2C3A42" 
@@ -403,7 +404,8 @@
                             <TextBlock Text="Name" 
                                        Foreground="White" 
                                        Margin="0,0,0,5"/>
-                            <TextBox Watermark="Enter your full name"
+                            <TextBox Text="{Binding Name}"
+                                     Watermark="Enter your full name"
                                      Height="35"
                                      Padding="8,0"
                                      FontSize="14"
@@ -571,6 +573,27 @@
                                 </Popup>
                             </Grid>
                         </StackPanel>
+                        
+                        <!-- Submit Button -->
+                        <Button Content="Calculate" 
+                                Width="140" 
+                                Height="35"
+                                HorizontalAlignment="Right"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                Margin="0,20,0,0"
+                                Command="{Binding SubmitChartDataCommand}">
+                            <Button.Styles>
+                                <Style Selector="Button">
+                                    <Setter Property="Background" Value="#2B5CE6"/>
+                                    <Setter Property="BorderBrush" Value="#1E4EC8"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Style>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="#3D6EF7"/>
+                                </Style>
+                            </Button.Styles>
+                        </Button>
                     </StackPanel>
                     
                     <!-- Footer with Close Button -->
@@ -596,7 +619,6 @@
                     </Grid>
                 </Grid>
             </Border>            
-            
             
             <!-- Pie Menu Popup -->
             <controls:PieMenuPopup x:Name="PieMenuPopup" 
@@ -629,7 +651,7 @@
                             <!-- System message placeholder -->
                             <Border IsVisible="{Binding IsSystemMessageVisible}"
                                     Padding="10"
-                                    Margin="5"
+                                    Margin="0,-10,0,10"
                                     CornerRadius="3">
                                 <Border.Styles>
                                     <Style Selector="Border">
