@@ -183,10 +183,96 @@
         
         <!-- Toolbar -->
         <Border DockPanel.Dock="Top" Background="#2C3A42" Padding="0,8">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="71,0,0,0">
-                <Grid Margin="0,0,5,0">
-                    <Button Width="50" Height="50" Command="{Binding Button1Command}"
-                            ToolTip.Tip="Single Dial">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Left side buttons -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="71,0,0,0">
+                    <Grid Margin="0,0,5,0">
+                        <Button Width="50" Height="50" Command="{Binding Button1Command}"
+                                ToolTip.Tip="Single Dial">
+                            <Button.Styles>
+                                <Style Selector="Button">
+                                    <Setter Property="Background" Value="#3E4C54"/>
+                                    <Setter Property="BorderBrush" Value="#4A5A64"/>
+                                </Style>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="#4A5A64"/>
+                                </Style>
+                            </Button.Styles>
+                            <Viewbox Stretch="Uniform">
+                                <Canvas Width="100" Height="100">
+                                    <!-- Single circle icon -->
+                                    <Ellipse Canvas.Left="10" Canvas.Top="10" Width="80" Height="80" 
+                                             Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                </Canvas>
+                            </Viewbox>
+                        </Button>
+                        <Border Height="3" VerticalAlignment="Bottom" 
+                                Background="{Binding IsTopButton1Active, Converter={StaticResource BooleanToColorConverter}}" />
+                    </Grid>
+                    <Grid Margin="0,0,5,0">
+                        <Button Width="50" Height="50" Command="{Binding Button2Command}"
+                                ToolTip.Tip="Bi-Dial">
+                            <Button.Styles>
+                                <Style Selector="Button">
+                                    <Setter Property="Background" Value="#3E4C54"/>
+                                    <Setter Property="BorderBrush" Value="#4A5A64"/>
+                                </Style>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="#4A5A64"/>
+                                </Style>
+                            </Button.Styles>
+                            <Viewbox Stretch="Uniform">
+                                <Canvas Width="100" Height="100">
+                                    <!-- Circle within a circle icon - with inner circle closer to outer -->
+                                    <Ellipse Canvas.Left="10" Canvas.Top="10" Width="80" Height="80" 
+                                             Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                    <Ellipse Canvas.Left="20" Canvas.Top="20" Width="60" Height="60" 
+                                             Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                </Canvas>
+                            </Viewbox>
+                        </Button>
+                        <Border Height="3" VerticalAlignment="Bottom" 
+                                Background="{Binding IsTopButton2Active, Converter={StaticResource BooleanToColorConverter}}" />
+                    </Grid>
+                    <Grid>
+                        <Button Width="50" Height="50" Command="{Binding Button3Command}"
+                                ToolTip.Tip="Tri-Dial">
+                            <Button.Styles>
+                                <Style Selector="Button">
+                                    <Setter Property="Background" Value="#3E4C54"/>
+                                    <Setter Property="BorderBrush" Value="#4A5A64"/>
+                                </Style>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="#4A5A64"/>
+                                </Style>
+                            </Button.Styles>
+                            <Viewbox Stretch="Uniform">
+                                <Canvas Width="100" Height="100">
+                                    <!-- Three concentric circles with consistent spacing -->
+                                    <Ellipse Canvas.Left="10" Canvas.Top="10" Width="80" Height="80" 
+                                             Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                    <Ellipse Canvas.Left="20" Canvas.Top="20" Width="60" Height="60" 
+                                             Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                    <Ellipse Canvas.Left="30" Canvas.Top="30" Width="40" Height="40" 
+                                             Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                </Canvas>
+                            </Viewbox>
+                        </Button>
+                        <Border Height="3" VerticalAlignment="Bottom" 
+                                Background="{Binding IsTopButton3Active, Converter={StaticResource BooleanToColorConverter}}" />
+                    </Grid>
+                </StackPanel>
+                
+                <!-- Right side network button -->
+                <Grid Grid.Column="2" Margin="0,0,15,0">
+                    <Button Width="50" Height="50" Command="{Binding NetworkButtonCommand}"
+                            ToolTip.Tip="Network Status">
                         <Button.Styles>
                             <Style Selector="Button">
                                 <Setter Property="Background" Value="#3E4C54"/>
@@ -198,68 +284,29 @@
                         </Button.Styles>
                         <Viewbox Stretch="Uniform">
                             <Canvas Width="100" Height="100">
-                                <!-- Single circle icon -->
-                                <Ellipse Canvas.Left="10" Canvas.Top="10" Width="80" Height="80" 
-                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+                                <!-- Upward facing trident icon -->
+                                <!-- Center prong -->
+                                <Path Data="M50,20 L50,75" 
+                                      Stroke="White" StrokeThickness="4" StrokeLineCap="Round"/>
+                                <!-- Left prong -->
+                                <Path Data="M25,30 L25,65" 
+                                      Stroke="White" StrokeThickness="4" StrokeLineCap="Round"/>
+                                <!-- Right prong -->
+                                <Path Data="M75,30 L75,65" 
+                                      Stroke="White" StrokeThickness="4" StrokeLineCap="Round"/>
+                                <!-- Horizontal connector between outer prongs -->
+                                <Path Data="M25,65 L75,65" 
+                                      Stroke="White" StrokeThickness="4" StrokeLineCap="Round"/>
+                                <!-- Handle/base -->
+                                <Path Data="M50,75 L50,85" 
+                                      Stroke="White" StrokeThickness="5" StrokeLineCap="Round"/>
                             </Canvas>
                         </Viewbox>
                     </Button>
                     <Border Height="3" VerticalAlignment="Bottom" 
-                            Background="{Binding IsTopButton1Active, Converter={StaticResource BooleanToColorConverter}}" />
+                            Background="{Binding IsNetworkOnline, Converter={StaticResource BooleanToColorConverter}}" />
                 </Grid>
-                <Grid Margin="0,0,5,0">
-                    <Button Width="50" Height="50" Command="{Binding Button2Command}"
-                            ToolTip.Tip="Bi-Dial">
-                        <Button.Styles>
-                            <Style Selector="Button">
-                                <Setter Property="Background" Value="#3E4C54"/>
-                                <Setter Property="BorderBrush" Value="#4A5A64"/>
-                            </Style>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                <Setter Property="Background" Value="#4A5A64"/>
-                            </Style>
-                        </Button.Styles>
-                        <Viewbox Stretch="Uniform">
-                            <Canvas Width="100" Height="100">
-                                <!-- Circle within a circle icon - with inner circle closer to outer -->
-                                <Ellipse Canvas.Left="10" Canvas.Top="10" Width="80" Height="80" 
-                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
-                                <Ellipse Canvas.Left="20" Canvas.Top="20" Width="60" Height="60" 
-                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
-                            </Canvas>
-                        </Viewbox>
-                    </Button>
-                    <Border Height="3" VerticalAlignment="Bottom" 
-                            Background="{Binding IsTopButton2Active, Converter={StaticResource BooleanToColorConverter}}" />
-                </Grid>
-                <Grid>
-                    <Button Width="50" Height="50" Command="{Binding Button3Command}"
-                            ToolTip.Tip="Tri-Dial">
-                        <Button.Styles>
-                            <Style Selector="Button">
-                                <Setter Property="Background" Value="#3E4C54"/>
-                                <Setter Property="BorderBrush" Value="#4A5A64"/>
-                            </Style>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                <Setter Property="Background" Value="#4A5A64"/>
-                            </Style>
-                        </Button.Styles>
-                        <Viewbox Stretch="Uniform">
-                            <Canvas Width="100" Height="100">
-                                <!-- Three concentric circles with consistent spacing -->
-                                <Ellipse Canvas.Left="10" Canvas.Top="10" Width="80" Height="80" 
-                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
-                                <Ellipse Canvas.Left="20" Canvas.Top="20" Width="60" Height="60" 
-                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
-                                <Ellipse Canvas.Left="30" Canvas.Top="30" Width="40" Height="40" 
-                                         Stroke="White" StrokeThickness="3" Fill="Transparent"/>
-                            </Canvas>
-                        </Viewbox>
-                    </Button>
-                    <Border Height="3" VerticalAlignment="Bottom" 
-                            Background="{Binding IsTopButton3Active, Converter={StaticResource BooleanToColorConverter}}" />
-                </Grid>
-            </StackPanel>
+            </Grid>
         </Border>
         
         <!-- Status Bar -->
@@ -365,7 +412,7 @@
             
             
             <!-- Flyout Panel - Overlays content -->
-<!-- Flyout Panel - Overlays content -->
+            <!-- Flyout Panel - Overlays content -->
             <Border HorizontalAlignment="Left"
                     VerticalAlignment="Stretch"
                     Background="#2C3A42" 
@@ -936,6 +983,223 @@
                     </Grid>
                 </Border>
             </Border>
+            
+<!-- LogOn Modal Dialog -->
+            <Border x:Name="LogOnModalOverlay"
+                    IsVisible="{Binding LogOnModal.IsVisible}"
+                    Background="#80000000"
+                    IsHitTestVisible="{Binding LogOnModal.IsVisible}"
+                    ZIndex="100">
+                <Border Width="420"
+                        Height="440"
+                        Background="#2C3A42"
+                        CornerRadius="4"
+                        BorderBrush="#4A5A64"
+                        BorderThickness="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        BoxShadow="0 4 20 0 #20000000, 0 0 0 0 #00000000">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Close button in top right corner -->
+                        <Button Grid.Row="0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Command="{Binding LogOnModal.CloseCommand}"
+                                Width="36" 
+                                Height="36"
+                                Background="#3E4C54"
+                                BorderBrush="#4A5A64"
+                                Foreground="White"
+                                ToolTip.Tip="Close"
+                                Margin="0,10,10,0">
+                            <Canvas Width="28" Height="28">
+                                <!-- Close Icon (X) -->
+                                <Path Data="M7,7 L21,21 M7,21 L21,7" 
+                                      Stroke="White" 
+                                      StrokeThickness="2.8" 
+                                      StrokeLineCap="Round"/>
+                            </Canvas>
+                        </Button>
+                        
+                        <!-- Main content area -->
+                        <StackPanel Grid.Row="0" Margin="20,20,20,10">
+                            <TextBlock Text="Connect"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       Margin="0,-10,0,15"/>
+                            
+                            <!-- System message placeholder -->
+                            <Border IsVisible="{Binding LogOnModal.IsSystemMessageVisible}"
+                                    Padding="10"
+                                    Margin="0,10,0,10"
+                                    CornerRadius="3">
+                                <Border.Styles>
+                                    <Style Selector="Border">
+                                        <Setter Property="Background" Value="#DFF0D8"/>
+                                        <Setter Property="BorderBrush" Value="#3C763D"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                    </Style>
+                                    <Style Selector="Border[Tag=Warning]">
+                                        <Setter Property="Background" Value="#FCF8E3"/>
+                                        <Setter Property="BorderBrush" Value="#8A6D3B"/>
+                                    </Style>
+                                    <Style Selector="Border[Tag=Error]">
+                                        <Setter Property="Background" Value="#F2DEDE"/>
+                                        <Setter Property="BorderBrush" Value="#A94442"/>
+                                    </Style>
+                                </Border.Styles>
+
+                                <Border.Tag>
+                                    <Binding Path="LogOnModal.SystemMessageTypeValue" />
+                                </Border.Tag>
+
+                                <TextBlock Text="{Binding LogOnModal.SystemMessageText}"
+                                           TextWrapping="Wrap">
+                                    <TextBlock.Styles>
+                                        <Style Selector="TextBlock">
+                                            <Setter Property="Foreground" Value="#3C763D"/>
+                                        </Style>
+                                        <Style Selector="Border[Tag=Warning] > TextBlock">
+                                            <Setter Property="Foreground" Value="#8A6D3B"/>
+                                        </Style>
+                                        <Style Selector="Border[Tag=Error] > TextBlock">
+                                            <Setter Property="Foreground" Value="#A94442"/>
+                                        </Style>
+                                    </TextBlock.Styles>
+                                </TextBlock>
+                            </Border>
+                            
+                            <!-- Added informational message with tooltip -->
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBlock Text="Conect to the API calculation service."
+                                           Foreground="#D0D0D0"
+                                           Grid.Column="0" 
+                                           VerticalAlignment="Center"/>
+                                
+                                <Button Grid.Column="1"
+                                        Width="20" 
+                                        Height="20"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Padding="0"
+                                        Margin="8,0,0,0"
+                                        ToolTip.Tip="This program's calculation routines and data storage take place in cloud services, to keep your data safe. Please register and connect in order to fully utilise the functions of this program.">
+                                    <Border Width="20" 
+                                            Height="20" 
+                                            Background="#4A5A64" 
+                                            CornerRadius="10">
+                                        <TextBlock Text="?"
+                                                   Foreground="White"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center"
+                                                   TextAlignment="Center"/>
+                                    </Border>
+                                </Button>
+                            </Grid>
+                            
+                            <!-- API End Point Location -->
+                            <TextBlock Text="API End Point Location" 
+                                       Foreground="White" 
+                                       Margin="0,10,0,5"/>
+                            <TextBox Text="{Binding LogOnModal.ApiLocation}"
+                                     Watermark="Enter API endpoint URL"
+                                     Background="#36454F"
+                                     Foreground="White"
+                                     BorderBrush="#4A5A64"
+                                     Margin="0,0,0,15"/>
+                            
+                            <!-- Email -->
+                            <TextBlock Text="Email" 
+                                       Foreground="White" 
+                                       Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding LogOnModal.Email}"
+                                     Watermark="Enter email address"
+                                     Background="#36454F"
+                                     Foreground="White"
+                                     BorderBrush="#4A5A64"
+                                     Margin="0,0,0,15"/>
+                            
+                            <!-- Password -->
+                            <TextBlock Text="Password" 
+                                       Foreground="White" 
+                                       Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding LogOnModal.Password}"
+                                     Watermark="Enter password"
+                                     PasswordChar="*"
+                                     Background="#36454F"
+                                     Foreground="White"
+                                     BorderBrush="#4A5A64"
+                                     Margin="0,0,0,10"/>
+                        </StackPanel>
+                        
+                        <!-- Fixed action buttons at bottom -->
+                        <Grid Grid.Row="1" Margin="20,10,20,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- Register Button -->
+                            <Button Grid.Column="0"
+                                    Content="Register" 
+                                    Width="120" 
+                                    Height="35"
+                                    HorizontalAlignment="Left"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    IsEnabled="{Binding !LogOnModal.IsProcessing}">
+                                <Button.Styles>
+                                    <Style Selector="Button">
+                                        <Setter Property="Background" Value="#2B5CE6"/>
+                                        <Setter Property="BorderBrush" Value="#1E4EC8"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Style>
+                                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="#3D6EF7"/>
+                                    </Style>
+                                </Button.Styles>
+                            </Button>
+                            
+                            <!-- Log On Button -->
+                            <Button Grid.Column="2"
+                                    Content="Log On" 
+                                    Width="120" 
+                                    Height="35"
+                                    HorizontalAlignment="Right"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    Command="{Binding LogOnModal.LogOnCommand}"
+                                    IsEnabled="{Binding !LogOnModal.IsProcessing}">
+                                <Button.Styles>
+                                    <Style Selector="Button">
+                                        <Setter Property="Background" Value="#2B5CE6"/>
+                                        <Setter Property="BorderBrush" Value="#1E4EC8"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Style>
+                                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="#3D6EF7"/>
+                                    </Style>
+                                </Button.Styles>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Border>
+            
         </Grid>
     </DockPanel>
 </Window>
