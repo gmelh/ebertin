@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿// Add these using statements at the top of your MainWindowViewModel.cs file:
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -8,6 +9,7 @@ using Ebertin.Views;
 using Ebertin.Services;
 using Ebertin.Models;
 using System.Collections.ObjectModel;
+
 
 namespace Ebertin.ViewModels
 {
@@ -25,6 +27,8 @@ namespace Ebertin.ViewModels
         private UserControl? _currentCanvas;
         private bool _isApiKeyModalVisible;
         private bool _isConfigurationModalVisible;
+        private bool _isNetworkOnline = false; // Default to offline
+        
         
         private string _apiLocation = "https://api.ebertinmethod.com";
         private string _api_key = "";
@@ -176,6 +180,12 @@ namespace Ebertin.ViewModels
             set => SetProperty(ref _isProcessing, value);
         }
         
+        public bool IsNetworkOnline
+        {
+            get => _isNetworkOnline;
+            set => SetProperty(ref _isNetworkOnline, value);
+        }
+        
         // Birth date and time text properties (for TextBox controls)
         public string BirthDateText
         {
@@ -252,12 +262,15 @@ namespace Ebertin.ViewModels
             get => _systemMessageType;
             set => SetProperty(ref _systemMessageType, value);
         }
+        
+        public LogOnModalViewModel LogOnModal { get; }
 
         // Commands
         public ICommand ExitCommand { get; }
         public ICommand Button1Command { get; }
         public ICommand Button2Command { get; }
         public ICommand Button3Command { get; }
+        public ICommand NetworkButtonCommand { get; private set; }
         public ICommand LeftButton1Command { get; }
         public ICommand LeftButton2Command { get; }
         public ICommand LeftButton3Command { get; }
@@ -270,8 +283,9 @@ namespace Ebertin.ViewModels
         public ICommand CloseConfigurationModalCommand { get; }
         public ICommand SaveConfigurationCommand { get; }
         public ICommand SelectLocationCommand { get; }
-        
         public ICommand SubmitChartDataCommand { get; }
+        
+        public ICommand OpenLogOnModalCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -300,7 +314,7 @@ namespace Ebertin.ViewModels
             LeftButton2Command = new RelayCommand(OnLeftButton2Click);
             LeftButton3Command = new RelayCommand(OnLeftButton3Click);
             CloseFlyoutCommand = new RelayCommand(CloseFlyout);
-            OpenApiKeyWindowCommand = new RelayCommand(OpenApiKeyWindow);
+            OpenApiKeyWindowCommand = new RelayCommand(OnOpenApiKeyWindow);
             CloseApiKeyModalCommand = new RelayCommand(CloseApiKeyModal);
             CreateApiKeyCommand = new AsyncRelayCommand(CreateApiKeyAsync, () => !IsProcessing);
             RetrieveApiKeyCommand = new AsyncRelayCommand(RetrieveApiKeyAsync, () => !IsProcessing);
@@ -309,6 +323,10 @@ namespace Ebertin.ViewModels
             SaveConfigurationCommand = new RelayCommand(SaveConfiguration);
             SelectLocationCommand = new RelayCommand<string>(SelectLocation);
             SubmitChartDataCommand = new RelayCommand(async () => await SubmitChartDataAsync());
+            NetworkButtonCommand = new RelayCommand(OnNetworkButtonClick);
+            LogOnModal = new LogOnModalViewModel(_configManager, _apiService, SetNetworkStatus);
+            OpenLogOnModalCommand = new RelayCommand(OpenLogOnModal);
+            
             
             // Initialize location and date/time properties
             _locationSearchText = string.Empty;
@@ -362,6 +380,22 @@ namespace Ebertin.ViewModels
             Console.WriteLine("Top Button 3 clicked - Active");
         }
         
+        private void OnNetworkButtonClick()
+        {
+            // If network is currently off, show the logon modal instead of just toggling
+            if (!IsNetworkOnline)
+            {
+                Console.WriteLine("Network is off - showing LogOn modal");
+                LogOnModal.Open();
+            }
+            else
+            {
+                // If network is on, turn it off
+                IsNetworkOnline = false;
+                Console.WriteLine("Network turned off");
+            }
+        }
+        
         private void SetTopButtonState(int activeButton)
         {
             IsTopButton1Active = (activeButton == 1);
@@ -412,25 +446,13 @@ namespace Ebertin.ViewModels
             Console.WriteLine($"Left Button 3 clicked - Active: {IsButton3Active}");
         }
         
-        private void OpenApiKeyWindow()
+        private async void OnOpenApiKeyWindow()
         {
-            // Reset message and load current API key if available
-            IsSystemMessageVisible = false;
-            string apiKey = _configManager.ApiKey;
-            if (!string.IsNullOrEmpty(apiKey))
-            {
-                ApiKeyDisplay = apiKey;
-            }
-            else
-            {
-                ApiKeyDisplay = "Your API key will appear here";
-            }
-            
-            // Open the Api key modal window
+            // Simply show the modal overlay
             IsApiKeyModalVisible = true;
-            Console.WriteLine("Api Key modal opened");
+            Console.WriteLine("API Key modal opened");
         }
-        
+     
         private void CloseApiKeyModal()
         {
             // Close the Api key modal window
@@ -633,6 +655,8 @@ namespace Ebertin.ViewModels
             Console.WriteLine("Configuration modal closed");
         }
         
+        
+        
         private void SaveConfiguration()
         {
             try
@@ -676,6 +700,17 @@ namespace Ebertin.ViewModels
                 IsSuggestionsVisible = false;
                 Console.WriteLine($"Selected location: {location}");
             }
+        }
+        
+        private void OpenLogOnModal()
+        {
+            LogOnModal.Open();
+        }
+        
+        private void SetNetworkStatus(bool isOnline)
+        {
+            IsNetworkOnline = isOnline;
+            Console.WriteLine($"Network status set to: {(isOnline ? "Online" : "Offline")}");
         }
         
         // Method to update location suggestions
